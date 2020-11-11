@@ -1,0 +1,104 @@
+/* Général ------------------------------------------------------------------------------------- */
+
+body, p, legend, label, input {
+    font: normal 8pt verdana, helvetica, sans-serif;
+}
+
+/* Forms --------------------------------------------------------------------------------------- */
+fieldset {
+    padding: 10px;
+    border: 1px #0568CD solid;
+    margin: 10px;
+}
+
+legend {
+    font-weight: bold;
+    color: #0568CD;
+}
+
+form label {
+    float: left;
+    width: 200px;
+    margin: 3px 0px 0px 0px;
+}
+
+form input {
+    margin: 3px 3px 0px 0px;
+    border: 1px #999 solid;
+}
+
+form input.sansLabel {
+    margin-left: 200px;
+}
+
+/* Styles et couleurs -------------------------------------------------------------------------- */
+.requis {
+    color: #c00;
+}
+
+.erreur {
+    color: #900;
+}
+
+.succes {
+    color: #090;
+}
+
+.info {
+    font-style: italic;
+    color: #E8A22B;
+}
+
+.mes{
+	color:maroon;
+}
+
+.menu{
+	padding: 10px 0px 10px 10px;
+    border: 1px #0568CD solid;
+    margin: 10px;
+}
+
+table {
+  width:50%;
+}
+th{
+	border: 1px solid #0080c0;
+}
+table, td {
+  border: 1px solid #c0c0c0;
+  border-collapse: collapse;
+}
+th{
+	color: #0080c0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+th, td {
+  padding: 5px;
+  text-align:center;
+  
+}
+#t01 tr:nth-child(even) {
+  background-color: #eee;
+  
+}
+#t01 tr:nth-child(odd) {
+ background-color: #fff;
+}
+tr,td{
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.thaction{
+	border: 1px solid #ff0000;
+	color: #ff0000;
+}
+
+.cli{
+	display: none;
+}
+
+.newClient{
+	display: none;
+}
