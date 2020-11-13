@@ -17,13 +17,8 @@ public class CreationClientForm {
     public static final String CHAMP_EMAIL      = "emailClient";
     public static final String SESSION_CLIENTS  = "mapClient";
 
-    public static final String ATT_SESSION_USER = "sessionUtilisateur";
+    
 
-    boolean                    find;
-
-    public boolean getFind() {
-        return find;
-    }
 
     Map<String, String> erreurs  = new HashMap<>();
     String              resultat = "";
@@ -38,7 +33,7 @@ public class CreationClientForm {
 
     /* **************** */
 
-    public Client clientForm( HttpServletRequest request ) {
+    public Client creerClient( HttpServletRequest request ) {
 
         Client client = new Client();
 
@@ -47,23 +42,6 @@ public class CreationClientForm {
         String adresse = request.getParameter( CHAMP_ADRESSE );
         String telephone = request.getParameter( CHAMP_TELEPHONE );
         String email = request.getParameter( CHAMP_EMAIL );
-
-        HttpSession session = request.getSession();
-
-        String temp = request.getParameter( "newClient" );
-        int index = temp.indexOf( " " );
-        String existClient = temp.substring( 0, index );
-
-        Map<String, Client> mapClient = (HashMap<String, Client>) session.getAttribute( SESSION_CLIENTS );
-        if ( mapClient == null ) {
-            mapClient = new HashMap<String, Client>();
-        }
-
-        if ( mapClient.containsKey( existClient ) ) {
-            find = true;
-        } else {
-            find = false;
-        }
 
         try {
             validationNom( nom );

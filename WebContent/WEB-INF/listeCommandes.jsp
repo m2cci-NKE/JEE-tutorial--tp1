@@ -20,7 +20,7 @@
 			<br>
 			<br>	
 			<c:choose>
-				<c:when test="${empty sessionScope.mapCommande  }"> <p>aucun client est enregistre</p></c:when>
+				<c:when test="${empty sessionScope.commande  }"> <p>aucun client est enregistre</p></c:when>
 				<c:otherwise>
 				
 			<table id="t01">
@@ -33,23 +33,12 @@
 					<th>Statut de paiement</th>
 					<th>Mode de laivraison</th>
 					<th>Statut de laivraison</th>
-					<th class="thaction">Action</th>
+					<th class="action">Action</th>
 					
 					</tr>
-					<c:forEach items="${sessionScope.mapCommande}" var="entry" varStatus="boucle">
+					<c:forEach items="${sessionScope.commande}" var="entry" varStatus="boucle">
 					<tr>
-						<td><p>
-						<c:choose>
-							<c:when test="${empty entry.value.client.nom }">
-							<c:out value="${name }"/>
-							</c:when>
-							<c:otherwise>
-								
-							<c:out value="${entry.value.client.nom } "/><c:out value="${entry.value.client.prenom }"/>
-							
-							</c:otherwise>
-						</c:choose>
-						</p></td>
+						<td><c:out value="${entry.value.client.nom } "/><c:out value="${entry.value.client.prenom }"/></td>
 			 			<td><p><c:out value="${entry.value.date }"/></p></td>
 			 			<td><p><c:out value="${entry.value.montant }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modePaiement }"/></p></td>

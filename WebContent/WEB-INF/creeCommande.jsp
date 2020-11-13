@@ -5,6 +5,7 @@
         <meta charset="utf-8" />
         <title>Creation d'une commande</title>
         <link type="text/css" rel="stylesheet" href="inc/style.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
     <body>
         <div>
@@ -12,38 +13,44 @@
         <c:import url="/inc/menu.jsp" />
                     <br />
                     
-            <form method="post" action="CreationCommande">
-           
-               
+            <form method="post" action="<c:url value="/creationCommande"/>">
                
                <fieldset>
                     <legend>Informations client</legend>
-                    <label for="check">New client ? <span class="requis">*</span></label>
-						 <input type="radio" name="yes" id="yes" onclick="myFunction()">Yes 
-						  <input type="radio" name="yes" id="no"onclick="myFunction()" />No
+                    
+                    
+                    <c:if test="${!empty sessionScope.clients }">
+                    
+                    	 <label for="check">New client ? <span class="requis">*</span></label>
+							 <input type="radio" name="choixNouveauClient" id="choixNouveauClient" value="nouveauClient" />Yes 
+						 	 <input type="radio" name="choixNouveauClient" id="choixNouveauClient" value="ancienClient" />No	
+                    
+                    </c:if>
+                   
 						  
-						   <br />
-						    
-								<span id="cli" class="cli"><c:import url="/inc/inc_commande_form.jsp"/></span> 
+				<c:set var="client" value="${ commande.client }" scope="request" />
+						    <div id="nouveauClient">
+						    	<c:import url="/inc/inc_commande_form.jsp"/>
+						    </div>
+								 
 				
-			              <br />
-			                    
-			                    
-			                    
-						<select name="newClient" id="newClient" class="newClient" onChange="show_selected(this);" >
-									    <option selected disabled >--Please choose a Client--</option>
+			       
+			                     <c:if test="${!empty sessionScope.clients }">  
+			                     <div id="ancienClient">
+			                     
+			                     <select name="listeClients" id="listeClients" >
+									    <option value="" >--Please choose a Client--</option>
 									    						    
-									    <c:forEach items="${sessionScope.mapCommande}" var="entry" varStatus="boucle">
-									    <option>
-												<c:out value="${entry.value.client.nom } "/><c:out value="${entry.value.client.prenom } "/>
-											</option>
-									</c:forEach>
+								    <c:forEach items="${sessionScope.clients}" var="entry" varStatus="boucle">
+								    <option value="${entry.value.nom }"> ${entry.value.prenom } ${entry.value.nom }</option>
+								</c:forEach>
 								</select>
-							
-             </fieldset>
+								
+			                     </div>
+			                     </c:if> 
+		   </fieldset>
              
-             
-            <fieldset>
+         <fieldset>
                     <legend>Informations commande</legend>
                     
                     <label for="dateCommande">Date <span class="requis">*</span></label>
@@ -90,25 +97,21 @@
         </div>
         
         
-        <script>        
-        function myFunction() {
-    
-        	if (document.getElementById('yes').checked) {
-        		document.getElementById("cli").style.display = 'block';
-        		document.getElementById("newClient").style.display = 'none';
-			} 
-        	
-        	if(document.getElementById('no').checked){
-        		document.getElementById("cli").style.display = 'none';
-				document.getElementById("newClient").style.display = 'block'; 	  
-			}}
+        <script>     
         
-        function show_selected(element) {
-         
-            var value = element.options[element.selectedIndex].text;
- 
-        }
-
+        	$(function(){
+        		
+        		$("div#ancienClient").hide();
+        		jQuery('input[name=choixNouveauClient]:radio').click(function(){
+        			$("div#nouveauClient").hide();
+        			$("div#ancienClient").hide();
+        			var divId= jQuery(this).val();
+        			$("div#"+divId).show();
+        		})
+        		
+        		
+        	});
+        	
 		</script>
         
     </body>

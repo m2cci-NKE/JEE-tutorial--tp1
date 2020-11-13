@@ -21,10 +21,10 @@ public class CreationClient extends HttpServlet {
     public static final String ATT_CLIENT       = "client";
     public static final String ATT_FORM         = "form";
     public static final String ATT_SESSION_USER = "sessionUtilisateur";
-    public static final String VUE_SUCCES       = "/tp1/listeClients";
+    public static final String VUE_SUCCES       = "/listeClients";
 
     public static final String VUE_FORM         = "/WEB-INF/creeClient.jsp";
-    public static final String SESSION_CLIENTS  = "mapClient";
+    public static final String SESSION_CLIENTS  = "clients";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
@@ -37,9 +37,8 @@ public class CreationClient extends HttpServlet {
             throws ServletException, IOException {
 
         CreationClientForm form = new CreationClientForm();
-
-        Client client = form.clientForm( request );
-
+        Client client = form.creerClient( request );
+        
         request.setAttribute( ATT_FORM, form );
         request.setAttribute( ATT_CLIENT, client );
 
@@ -54,12 +53,9 @@ public class CreationClient extends HttpServlet {
             mapClient.put( client.getNom(), client );
             session.setAttribute( SESSION_CLIENTS, mapClient );
 
-            response.sendRedirect( VUE_SUCCES );
-
-        } else if ( form.getFind() == true ) {
-            response.sendRedirect( VUE_SUCCES );
-
-        }
+            //response.sendRedirect( VUE_SUCCES );
+            this.getServletContext().getRequestDispatcher( VUE_SUCCES ).forward( request, response );
+        } 
 
         else {
             this.getServletContext().getRequestDispatcher( VUE_FORM ).forward( request, response );

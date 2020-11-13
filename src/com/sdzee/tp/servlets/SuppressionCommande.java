@@ -17,7 +17,7 @@ import com.sdzee.tp.beans.Commande;
 public class SuppressionCommande extends HttpServlet {
     private static final long  serialVersionUID = 1L;
 
-    public static final String SESSION_COMMANDE = "mapCommande";
+    public static final String SESSION_COMMANDE = "commande";
     public static final String VUE_SUCCES       = "/WEB-INF/listeCommandes.jsp";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response )

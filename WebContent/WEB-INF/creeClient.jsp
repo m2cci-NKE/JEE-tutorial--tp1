@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Creation d'un client</title>
   <link type="text/css" rel="stylesheet" href="inc/style.css" />
 </head>
 <body>

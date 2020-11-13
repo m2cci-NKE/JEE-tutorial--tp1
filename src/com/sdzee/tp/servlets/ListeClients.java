@@ -16,9 +16,7 @@ public class ListeClients extends HttpServlet {
     private static final long  serialVersionUID = 1L;
 
     public static final String VUE_SUCCES       = "/WEB-INF/listeClients.jsp";
-    public static final String VUE_FORM         = "/WEB-INF/creeClient.jsp";
 
-    public static final String ATT_SESSION_USER = "sessionUtilisateur";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
@@ -29,7 +27,7 @@ public class ListeClients extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
-        this.getServletContext().getRequestDispatcher( VUE_SUCCES ).forward( request, response );
+      
 
     }
 

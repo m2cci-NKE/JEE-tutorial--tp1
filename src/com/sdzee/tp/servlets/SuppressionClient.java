@@ -16,7 +16,7 @@ import com.sdzee.tp.beans.Client;
 @WebServlet( "/SuppressionClient" )
 public class SuppressionClient extends HttpServlet {
     private static final long  serialVersionUID = 1L;
-    public static final String SESSION_CLIENTS  = "mapClient";
+    public static final String SESSION_CLIENTS  = "clients";
     public static final String VUE_SUCCES       = "/WEB-INF/listeClients.jsp";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response )

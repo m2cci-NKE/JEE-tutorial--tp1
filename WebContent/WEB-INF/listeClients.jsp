@@ -16,13 +16,10 @@
 	  <c:import url="/inc/menu.jsp" />
                     <br /> 
 					<p class="info">${form.resultat }<p/> 
-				
-	
-			 	
 			<br>
 			<br>	
 			<c:choose>
-				<c:when test="${empty sessionScope.mapClient  }"> <p>aucun client est enregistre</p></c:when>
+				<c:when test="${empty sessionScope.clients  }"> <p>aucun client est enregistre</p></c:when>
 				
 				<c:otherwise>
 				
@@ -38,7 +35,7 @@
 				<th class="thaction">Action</th>
 				
 				</tr>
-				<c:forEach items="${sessionScope.mapClient}" var="entry" varStatus="boucle">
+				<c:forEach items="${sessionScope.clients}" var="entry" varStatus="boucle">
 				<tr>
 					<td><p><c:out value="${entry.value.nom }"/></p></td>
 		 			<td><p><c:out value="${entry.value.prenom }"/></p></td>
