@@ -21,7 +21,7 @@ public class CreationClient extends HttpServlet {
     public static final String ATT_CLIENT       = "client";
     public static final String ATT_FORM         = "form";
     public static final String ATT_SESSION_USER = "sessionUtilisateur";
-    public static final String VUE_SUCCES       = "/listeClients";
+    public static final String VUE_SUCCES       = "/WEB-INF/listeClients.jsp";;
 
     public static final String VUE_FORM         = "/WEB-INF/creeClient.jsp";
     public static final String SESSION_CLIENTS  = "clients";
@@ -53,8 +53,11 @@ public class CreationClient extends HttpServlet {
             mapClient.put( client.getNom(), client );
             session.setAttribute( SESSION_CLIENTS, mapClient );
 
-            //response.sendRedirect( VUE_SUCCES );
-            this.getServletContext().getRequestDispatcher( VUE_SUCCES ).forward( request, response );
+            
+            //response.sendRedirect( request.getContextPath() + VUE_SUCCES );
+           
+          
+           this.getServletContext().getRequestDispatcher( VUE_SUCCES ).forward( request, response );
         } 
 
         else {

@@ -7,21 +7,7 @@ public class Client {
     private String adresse;
     private String telephone;
     private String email;
-
-    public Client( String nom, String prenom, String adresse, String telephone, String email ) {
-
-        this.nom = nom;
-        this.prenom = prenom;
-        this.adresse = adresse;
-        this.telephone = telephone;
-        this.email = email;
-    }
-
-    public Client( String nom, String prenom, String adresse ) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.adresse = adresse;
-    }
+    private String chemin;
 
     public Client() {
 
@@ -67,10 +53,14 @@ public class Client {
         return email;
     }
 
-    @Override
-    public String toString() {
-        return " [nom=" + nom + ", prenom=" + prenom + ", adresse=" + adresse + ", telephone=" + telephone
-                + ", email=" + email + "]";
-    }
+	public String getChemin() {
+		return chemin;
+	}
+
+	public void setChemin(String chemin) {
+		this.chemin = chemin;
+	}
+
+ 
 
 }

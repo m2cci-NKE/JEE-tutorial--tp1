@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Liste de Commandes </title>
+<link type="text/css" rel="stylesheet" href="<c:url value="/inc/style.css"/>" />
 </head>
 <body>
 
@@ -33,6 +34,7 @@
 					<th>Statut de paiement</th>
 					<th>Mode de laivraison</th>
 					<th>Statut de laivraison</th>
+					<th>Image</th>
 					<th class="action">Action</th>
 					
 					</tr>
@@ -45,16 +47,16 @@
 			 			<td><p><c:out value="${entry.value.statutPaiement }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modeLivraison }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modeLivraison }"/></p></td>
-			 			<td><p><a href="<c:url value="/suppressionCommande?date=${ entry.value.date}" />"><img src="image/delete.jpg" style="width:25px;height:25px" /></p></td>
+			 			<td><p><a href="<c:url value="commande.client.chemin" />">Check</a></p></td>
+			 			<td><p><a href="<c:url value="/suppressionCommande?date=${ entry.value.date}" />" ><img src="image/delete.jpg" style="width:25px;height:25px" ></a></p></td>
 					</tr>
+					<c:out value="${entry.value.client.chemin }"></c:out>
 				</c:forEach>
 			</table>			
 			</c:otherwise>
-			</c:choose>
-		
-		
-		
-		
+			</c:choose>	
+			
+			
 	</div>
 	
 </body>

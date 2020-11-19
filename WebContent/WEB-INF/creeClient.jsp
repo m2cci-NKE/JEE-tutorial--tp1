@@ -1,77 +1,24 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-   <%@ page import="java.util.*" %>
-    <%@ page import=" com.sdzee.tp.beans.Client" %>
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Creation d'un client</title>
-  <link type="text/css" rel="stylesheet" href="inc/style.css" />
-</head>
-<body>
-				<c:import url="/inc/menu.jsp"/>
-
-				
-				<p class="info">${form.resultat }<p/> 
-			
-	
-			 	
-			<br>
-			<br>
-			
-		  <form method="post" action="creationClient">
-           
+    <head>
+        <meta charset="utf-8" />
+        <title>Création d'un client</title>
+        <link type="text/css" rel="stylesheet" href="<c:url value="/inc/style.css"/>" />
+    </head>
+    <body>
+        <c:import url="/inc/menu.jsp" />
+        <div>
+            <form method="post" action="<c:url value="/creationClient"/>" enctype="multipart/form-data">
                <fieldset>
-               <legend>Informations client</legend>
-               
-                <label for="check">New client ? <span class="requis">*</span></label>
-						 <input type="radio" name="yes" id="yes" onclick="myFunction()">Yes 
-						  <input type="radio" name="yes" id="no"onclick="myFunction()" />No
-						  
-						   <br /><br />	
-					       
-						<select name="newClient" id="newClient" class="newClient"  onChange="show_selected(this);" >
-									    <option >--Please choose a Client--</option>
-									    						    
-									    <c:forEach items="${sessionScope.mapClient}" var="entry" varStatus="boucle">
-									    <option>
-												<c:out value="${entry.value.nom } "/><c:out value="${entry.value.prenom } "/>
-											</option>
-									</c:forEach>
-								</select>
-							<br /><br />
-							
-									
-                    <span id="cli" class="cli"> <c:import url="/inc/inc_client_form.jsp"></c:import></span>
-                     
-				</fieldset>
-                <input type="submit" value="Valider" />
+                    <legend>Informations client</legend>
+                    <c:import url="/inc/inc_client_form.jsp" />
+                </fieldset>
+                <p class="info">${ form.resultat }</p>
+                <input type="submit" value="Valider"  />
                 <input type="reset" value="Remettre à zéro" /> <br />
-                
             </form>
-
-				
-
- <script>        
-        function myFunction() {
-    
-        	if (document.getElementById('yes').checked) {
-        		document.getElementById("cli").style.display = 'block';
-        		document.getElementById("newClient").style.display = 'none';
-			} 
-        	
-        	if(document.getElementById('no').checked){
-        		document.getElementById("cli").style.display = 'none';
-				document.getElementById("newClient").style.display = 'block'; 	  
-			}
-        	}
-     
-        	
-   
-
-		</script>
-
-	
-</body>
+        </div>
+    </body>
 </html>

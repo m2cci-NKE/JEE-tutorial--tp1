@@ -1,13 +1,4 @@
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-
-</head>
-<body>
-
 
 	<label for="nomClient">Nom <span class="requis">*</span></label>
 	<input type="text" id="nomClient" name="nomClient" value="<c:out value="${client.nom }"/>" size="20"
@@ -41,6 +32,7 @@
 	
 	<br />
 
+	<label for="image">Image</label>
+     <input type="file" name="image"/> 
+              
 
-</body>
-</html>

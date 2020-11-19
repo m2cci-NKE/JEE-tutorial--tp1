@@ -13,7 +13,7 @@
         <c:import url="/inc/menu.jsp" />
                     <br />
                     
-            <form method="post" action="<c:url value="/creationCommande"/>">
+            <form method="post" action="<c:url value="/creationCommande"/>" enctype="multipart/form-data">
                
                <fieldset>
                     <legend>Informations client</legend>
@@ -87,8 +87,8 @@
                     <input type="text" id="statutLivraisonCommande" name="statutLivraisonCommande" value="<c:out value="${commande.statutLivraison }"/> " size="20" maxlength="20" />
                         <span class="erreur">${form.erreurs['statutLivraisonCommande'] }</span> 
                     <br />
-                    
-      <p class="erreur">${ form.resultat }</p>
+                   
+      				<p class="erreur">${ form.resultat }</p>
                 </fieldset>
                 <input type="submit" value="Valider"  />
                 <input type="reset" value="Remettre à zéro" /> <br />

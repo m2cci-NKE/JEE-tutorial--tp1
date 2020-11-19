@@ -21,6 +21,7 @@ public class ListeClients extends HttpServlet {
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
+    	
         this.getServletContext().getRequestDispatcher( VUE_SUCCES ).forward( request, response );
     }
 

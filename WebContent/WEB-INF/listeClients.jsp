@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8" />
 <title>Liste des clients</title>
-<link type="text/css" rel="stylesheet" href="inc/style.css" />
+<link type="text/css" rel="stylesheet" href="<c:url value="/inc/style.css"/>" />
 <style>
 
 
@@ -15,11 +15,13 @@
 	<div>
 	  <c:import url="/inc/menu.jsp" />
                     <br /> 
-					<p class="info">${form.resultat }<p/> 
+				
 			<br>
 			<br>	
 			<c:choose>
-				<c:when test="${empty sessionScope.clients  }"> <p>aucun client est enregistre</p></c:when>
+				<c:when test="${empty sessionScope.clients  }"> 
+				<p>aucun client est enregistre</p>
+				</c:when>
 				
 				<c:otherwise>
 				
@@ -32,6 +34,7 @@
 				<th>Adresse</th>
 				<th>Téléphone</th>
 				<th>Email</th>
+				<th>Picture</th>
 				<th class="thaction">Action</th>
 				
 				</tr>
@@ -42,6 +45,7 @@
 		 			<td><p><c:out value="${entry.value.adresse }"/></p></td>
 		 			<td><p><c:out value="${entry.value.telephone }"/></p></td>
 		 			<td><p><c:out value="${entry.value.email }"/></p></td>
+		 			<td><p><c:out value="${client.chemin }"/></p></td>
 		 			<td><p><a href="<c:url value="/suppressionClient?nom=${ entry.value.nom}" />"><img src="image/delete.jpg" style="width:25px;height:25px" /></p></td>
 				</tr>
 			</c:forEach>

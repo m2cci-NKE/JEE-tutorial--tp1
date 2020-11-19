@@ -26,6 +26,7 @@ public class CreationCommande extends HttpServlet {
     public static final String SESSION_COMMANDE = "commande";
     public static final String ATT_CKECK_NAME   = "name";
     public static final String SESSION_CLIENTS  = "clients";
+    public static final String CHEMIN        = "chemin";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -34,10 +35,18 @@ public class CreationCommande extends HttpServlet {
 
     public void doPost( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
-
+    	
+    	String chemin = this.getServletConfig().getInitParameter( CHEMIN );
         CreationCommandeForm form = new CreationCommandeForm();
-        Commande commande = form.creerCommande( request );
+        Commande commande = null;
+		try {
+			commande = form.creerCommande( request,chemin );
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
 
+        
+        
         request.setAttribute( ATT_FORM, form );
         request.setAttribute( ATT_COMMANDE, commande );
 
@@ -54,6 +63,8 @@ public class CreationCommande extends HttpServlet {
             clients.put(commande.getClient().getNom(), commande.getClient());
             
             session.setAttribute( SESSION_CLIENTS, clients );
+            
+            System.out.println("path2: "+commande.getClient().getChemin());
  
             /* **Add session Commande** */
             

@@ -1,27 +1,25 @@
 package com.sdzee.tp.forms;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import com.sdzee.tp.beans.Client;
 
-public class CreationClientForm {
-
-    public static final String CHAMP_NOM        = "nomClient";
-    public static final String CHAMP_PRENOM     = "prenomClient";
-    public static final String CHAMP_ADRESSE    = "adresseClient";
-    public static final String CHAMP_TELEPHONE  = "telephoneClient";
-    public static final String CHAMP_EMAIL      = "emailClient";
-    public static final String SESSION_CLIENTS  = "mapClient";
-
+public final class CreationClientForm {
+    private static final String CHAMP_NOM       = "nomClient";
+    private static final String CHAMP_PRENOM    = "prenomClient";
+    private static final String CHAMP_ADRESSE   = "adresseClient";
+    private static final String CHAMP_TELEPHONE = "telephoneClient";
+    private static final String CHAMP_EMAIL     = "emailClient";
+    public static final String CHAMP_FICHIER     = "image";
     
-
-
-    Map<String, String> erreurs  = new HashMap<>();
-    String              resultat = "";
+    private String              resultat;
+    private Map<String, String> erreurs         = new HashMap<String, String>();
 
     public Map<String, String> getErreurs() {
         return erreurs;
@@ -31,97 +29,151 @@ public class CreationClientForm {
         return resultat;
     }
 
-    /* **************** */
+    public Client creerClient( HttpServletRequest request ) throws IOException, ServletException  {
+    	
+    
+    	 Client client = new Client();
+    		
+			Part part = request.getPart(CHAMP_FICHIER);
+			
+			String nomFichier= getNomFichier(part);
+			
+			if (nomFichier!=null && !nomFichier.isEmpty()) {
+				
+				String nomChamp= part.getName();
+				
+				request.setAttribute(nomChamp, nomFichier);
+				client.setChemin(nomFichier);
+			}
+			
+		
+	
+    	
+    	
+    	
+        String nom = getValeurChamp( request, CHAMP_NOM );
+        String prenom = getValeurChamp( request, CHAMP_PRENOM );
+        String adresse = getValeurChamp( request, CHAMP_ADRESSE );
+        String telephone = getValeurChamp( request, CHAMP_TELEPHONE );
+        String email = getValeurChamp( request, CHAMP_EMAIL );
 
-    public Client creerClient( HttpServletRequest request ) {
-
-        Client client = new Client();
-
-        String nom = request.getParameter( CHAMP_NOM );
-        String prenom = request.getParameter( CHAMP_PRENOM );
-        String adresse = request.getParameter( CHAMP_ADRESSE );
-        String telephone = request.getParameter( CHAMP_TELEPHONE );
-        String email = request.getParameter( CHAMP_EMAIL );
+       
 
         try {
             validationNom( nom );
         } catch ( Exception e ) {
-            erreurs.put(
-                    CHAMP_NOM, e.getMessage() );
+            setErreur( CHAMP_NOM, e.getMessage() );
         }
+        client.setNom( nom );
 
         try {
             validationPrenom( prenom );
         } catch ( Exception e ) {
-            erreurs.put( CHAMP_PRENOM, e.getMessage() );
+            setErreur( CHAMP_PRENOM, e.getMessage() );
         }
+        client.setPrenom( prenom );
 
         try {
             validationAdresse( adresse );
         } catch ( Exception e ) {
-            erreurs.put( CHAMP_ADRESSE, e.getMessage() );
+            setErreur( CHAMP_ADRESSE, e.getMessage() );
         }
+        client.setAdresse( adresse );
+
+//        try {
+//            validationTelephone( telephone );
+//        } catch ( Exception e ) {
+//            setErreur( CHAMP_TELEPHONE, e.getMessage() );
+//        }
+        client.setTelephone( telephone );
 
         try {
-            validationNumero( telephone );
+            validationEmail( email );
         } catch ( Exception e ) {
-            erreurs.put( CHAMP_TELEPHONE, e.getMessage() );
+            setErreur( CHAMP_EMAIL, e.getMessage() );
         }
-
-        client.setNom( nom );
-        client.setPrenom( prenom );
-        client.setAdresse( adresse );
-        client.setTelephone( telephone );
         client.setEmail( email );
 
         if ( erreurs.isEmpty() ) {
-
-            resultat = "Client créé avec succès !";
-
+            resultat = "Succès de la création du client.";
         } else {
-
-            resultat = "Echec de la création de la client . ";
+            resultat = "Échec de la création du client.";
         }
 
         return client;
     }
 
-    /* ************************************* */
-
+    
+    private String getNomFichier(Part part) { 
+    	
+		for (String  contentDisposition : part.getHeader("content-disposition").split(";")) {
+			if (contentDisposition.trim().startsWith("filename")) {
+				return contentDisposition.substring(contentDisposition.indexOf("=")+1).replace("\"", "");
+			}
+		} 
+		return null;
+	}
+    
+    
+    
     private void validationNom( String nom ) throws Exception {
-
-        if ( nom != null && nom.trim().length() < 2 ) {
-
-            throw new Exception( "Le nom doit contenir plus de 2 caracteres" );
+        if ( nom != null ) {
+            if ( nom.length() < 2 ) {
+                throw new Exception( "Le nom d'utilisateur doit contenir au moins 2 caractères." );
+            }
+        } else {
+            throw new Exception( "Merci d'entrer un nom d'utilisateur." );
         }
-
     }
 
     private void validationPrenom( String prenom ) throws Exception {
-
-        if ( prenom != null && prenom.trim().length() < 2 ) {
-
-            throw new Exception( "Le prenom doit contenir plus de 2 caracteres" );
-
+        if ( prenom != null && prenom.length() < 2 ) {
+            throw new Exception( "Le prénom d'utilisateur doit contenir au moins 2 caractères." );
         }
-
-    }
-
-    private void validationNumero( String telephone ) throws Exception {
-        if ( telephone != null && telephone.trim().length() < 4 ) {
-
-            throw new Exception( "Le telephone doit contenir plus de 4 caracteres" );
-        }
-
     }
 
     private void validationAdresse( String adresse ) throws Exception {
-
-        if ( adresse != null && adresse.trim().length() < 10 ) {
-
-            throw new Exception( "L'adresse doit contenir plus de 10 caracteres" );
+        if ( adresse != null ) {
+            if ( adresse.length() < 10 ) {
+                throw new Exception( "L'adresse de livraison doit contenir au moins 10 caractères." );
+            }
+        } else {
+            throw new Exception( "Merci d'entrer une adresse de livraison." );
         }
-
     }
 
+	/*
+	 * private void validationTelephone( String telephone ) throws Exception { if (
+	 * telephone != null ) { if ( !telephone.matches( "^\\d+$" ) ) { throw new
+	 * Exception( "Le numéro de téléphone doit uniquement contenir des chiffres." );
+	 * } else if ( telephone.length() < 4 ) { throw new Exception(
+	 * "Le numéro de téléphone doit contenir au moins 4 chiffres." ); } } else {
+	 * throw new Exception( "Merci d'entrer un numéro de téléphone." ); } }
+	 */
+    
+    private void validationEmail( String email ) throws Exception {
+        if ( email != null && !email.matches( "([^.@]+)(\\.[^.@]+)*@([^.@]+\\.)+([^.@]+)" ) ) {
+            throw new Exception( "Merci de saisir une adresse mail valide." );
+        }
+    }
+
+    /*
+     * Ajoute un message correspondant au champ spécifié à la map des erreurs.
+     */
+    private void setErreur( String champ, String message ) {
+        erreurs.put( champ, message );
+    }
+
+    /*
+     * Méthode utilitaire qui retourne null si un champ est vide, et son contenu
+     * sinon.
+     */
+    private static String getValeurChamp( HttpServletRequest request, String nomChamp ) {
+        String valeur = request.getParameter( nomChamp );
+        if ( valeur == null || valeur.trim().length() == 0 ) {
+            return null;
+        } else {
+            return valeur;
+        }
+    }
 }
