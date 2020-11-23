@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,11 +47,8 @@ public class CreationCommandeForm {
     private static final String CHAMP_LISTE_CLIENTS    = "listeClients";
     private static final String ANCIEN_CLIENT          = "ancienClient";
     
-    public static final String CHAMP_FICHIER     = "image";
-    
+      
 
-    
-    public static final int TAILLE_TAMPON = 10240; // 10 ko
 
     public Map<String, String> erreurs = new HashMap<>();
     String                     resultat;
@@ -70,64 +68,6 @@ public class CreationCommandeForm {
     	
     	
     	
-    	try { 
-			Part part = request.getPart(CHAMP_FICHIER);
-		
-			String nomFichier= getNomFichier(part);
-			
-			if (nomFichier!=null && !nomFichier.isEmpty()) {
-				 System.out.println("nomFichier :"+nomFichier);
-				 
-				String nomChamp= part.getName();
-				
-				request.setAttribute(nomChamp, nomFichier);
-			}
-			
-			/* Extraction du type MIME du fichier depuis l'InputStream nommé "contenu" */
-	    	MimeUtil.registerMimeDetector( "eu.medsea.mimeutil.detector.MagicMimeMimeDetector" );
-	    	Collection<?> mimeTypes = MimeUtil.getMimeTypes( part.getInputStream() );
-	   
-	    	/*
-	    	 * Si le fichier est bien une image, alors son en-tête MIME
-	    	 * commence par la chaîne "image"
-	    	 */
-	    	if ( mimeTypes.toString().startsWith( "image" ) ) {
-	    	    System.out.println("File is an Image");
-	    	    try {
-	    	    	ecrireFichier( part, nomFichier, chemin );
-	    	    	
-	    	    	File file = new File(chemin);
-	    	    	String path = file.getAbsolutePath();
-	    	    	
-	    			client.setChemin(file.getAbsolutePath()); 
-	    			
-	    			System.out.println("path: "+client.getChemin());
-	    			 
-				} catch (Exception e) {
-					 setErreurs( CHAMP_FICHIER, "Erreur lors de l'écriture du fichier sur le disque." );
-				}
-	    	    
-
-	    	} else {
-	    		System.out.println("File isn't an Image");
-	    		throw new Exception("le fichier doit être une image");
-	    	}
-			
-			
-	    	
-	    	
-		
-		} catch (IOException | ServletException e1) {
-			e1.printStackTrace();
-		}
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
         /*
          * Si l'utilisateur choisit un client déjà existant, pas de validation à
          * effectuer
@@ -144,7 +84,7 @@ public class CreationCommandeForm {
         } else {
            
             CreationClientForm clientForm = new CreationClientForm();
-            client = clientForm.creerClient( request );
+            client = clientForm.creerClient( request , chemin);
             erreurs = clientForm.getErreurs();
         }
     	
@@ -155,27 +95,25 @@ public class CreationCommandeForm {
         /* ****validation Commande***** */
         double montant = 0;
 
-      
-
         String modePaiement = request.getParameter( CHAMP_MODE_PAIEMENT );
         String statutPaiement = request.getParameter( CHAMP_STATUT_PAIEMENT );
         String modeLivraison = request.getParameter( CHAMP_MODE_LIVRAISON );
         String statutLivraison = request.getParameter( CHAMP_STATUT_LIVRAISON );
 
-		/*
-		 * try { montant = Double.parseDouble( request.getParameter( CHAMP_MONTANT ) );
-		 * validationMontant( montant ); } catch ( Exception e ) { setErreurs(
-		 * CHAMP_MONTANT, e.getMessage() ); }
-		 * 
-		 * try { validationModePaiement( modePaiement ); } catch ( Exception e ) {
-		 * setErreurs( CHAMP_MODE_PAIEMENT, e.getMessage() ); } try {
-		 * validationstatutPaiement( statutPaiement ); } catch ( Exception e ) {
-		 * setErreurs( CHAMP_STATUT_PAIEMENT, e.getMessage() ); } try {
-		 * validationModeLivraison( modeLivraison ); } catch ( Exception e ) {
-		 * setErreurs( CHAMP_MODE_LIVRAISON, e.getMessage() ); } try {
-		 * validationStatutLivraison( statutLivraison ); } catch ( Exception e ) {
-		 * setErreurs( CHAMP_STATUT_LIVRAISON, e.getMessage() ); }
-		 */
+		
+		  try { montant = Double.parseDouble( request.getParameter( CHAMP_MONTANT ) );
+		  validationMontant( montant ); } catch ( Exception e ) { setErreurs(
+		  CHAMP_MONTANT, e.getMessage() ); }
+		  
+		  try { validationModePaiement( modePaiement ); } catch ( Exception e ) {
+		  setErreurs( CHAMP_MODE_PAIEMENT, e.getMessage() ); } try {
+		  validationstatutPaiement( statutPaiement ); } catch ( Exception e ) {
+		  setErreurs( CHAMP_STATUT_PAIEMENT, e.getMessage() ); } try {
+		  validationModeLivraison( modeLivraison ); } catch ( Exception e ) {
+		  setErreurs( CHAMP_MODE_LIVRAISON, e.getMessage() ); } try {
+		  validationStatutLivraison( statutLivraison ); } catch ( Exception e ) {
+		  setErreurs( CHAMP_STATUT_LIVRAISON, e.getMessage() ); }
+		 
 
         if ( !erreurs.isEmpty() ) {
             resultat = "Echec de la création de la commande.";
@@ -205,61 +143,9 @@ public class CreationCommandeForm {
     }
 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    private void ecrireFichier(Part part, String nomFichier, String chemin) {
-		
-    	BufferedInputStream entree = null;
-    	BufferedOutputStream sortie= null;
-    	
-    	try {
-			entree = new BufferedInputStream(part.getInputStream(), TAILLE_TAMPON);
-			
-			sortie= new BufferedOutputStream(new FileOutputStream(new File(chemin+nomFichier)));
-			
-			
-			 byte[] tampon = new byte[TAILLE_TAMPON];
-		        int longueur;
-		        while ( ( longueur = entree.read( tampon ) ) > 0 ) {
-		            sortie.write( tampon, 0, longueur );
-		        }
-		        
-		        
-		        
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		} finally {
-			try {
-				sortie.close();
-			}
-			catch (IOException ignore) {
-			
-			} 
-			try {
-				entree.close();
-			}
-			catch (IOException ignore) {
-			
-			} 
-		}
-		
-	}
+  
 
-	private String getNomFichier(Part part) {
-		for (String  contentDisposition : part.getHeader("content-disposition").split(";")) {
-			if (contentDisposition.trim().startsWith("filename")) {
-				return contentDisposition.substring(contentDisposition.indexOf("=")+1).replace("\"", "");
-			}
-		} 
-		return null;
-	}
+	
 
 	private static String getValeurChamp( HttpServletRequest request, String nomChamp ) {
         String valeur = request.getParameter( nomChamp );

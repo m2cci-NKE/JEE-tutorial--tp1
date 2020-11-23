@@ -28,6 +28,7 @@ public class CreationCommande extends HttpServlet {
     public static final String SESSION_CLIENTS  = "clients";
     public static final String CHEMIN        = "chemin";
 
+    
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         this.getServletContext().getRequestDispatcher( VUE_FORM ).forward( request, response );
@@ -64,7 +65,7 @@ public class CreationCommande extends HttpServlet {
             
             session.setAttribute( SESSION_CLIENTS, clients );
             
-            System.out.println("path2: "+commande.getClient().getChemin());
+         
  
             /* **Add session Commande** */
             

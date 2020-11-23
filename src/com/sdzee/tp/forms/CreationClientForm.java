@@ -1,6 +1,11 @@
 package com.sdzee.tp.forms;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,13 +15,19 @@ import javax.servlet.http.Part;
 
 import com.sdzee.tp.beans.Client;
 
+import eu.medsea.mimeutil.MimeUtil;
+
 public final class CreationClientForm {
     private static final String CHAMP_NOM       = "nomClient";
     private static final String CHAMP_PRENOM    = "prenomClient";
     private static final String CHAMP_ADRESSE   = "adresseClient";
     private static final String CHAMP_TELEPHONE = "telephoneClient";
     private static final String CHAMP_EMAIL     = "emailClient";
-    public static final String CHAMP_FICHIER     = "image";
+    
+    
+    private static final String CHAMP_IMAGE     = "imageClient";
+
+    private static final int    TAILLE_TAMPON   = 10240;                        // 10ko
     
     private String              resultat;
     private Map<String, String> erreurs         = new HashMap<String, String>();
@@ -29,28 +40,22 @@ public final class CreationClientForm {
         return resultat;
     }
 
-    public Client creerClient( HttpServletRequest request ) throws IOException, ServletException  {
+    public Client creerClient( HttpServletRequest request, String chemin)  {
     	
     
     	 Client client = new Client();
-    		
-			Part part = request.getPart(CHAMP_FICHIER);
-			
-			String nomFichier= getNomFichier(part);
-			
-			if (nomFichier!=null && !nomFichier.isEmpty()) {
-				
-				String nomChamp= part.getName();
-				
-				request.setAttribute(nomChamp, nomFichier);
-				client.setChemin(nomFichier);
-			}
-			
+    	 
+    	 String image = null;
 		
-	
-    	
-    	
-    	
+			try {
+				image = getValidationIamge(request, chemin);
+			}  catch ( FormValidationException e ) {
+	            setErreur( CHAMP_IMAGE, e.getMessage() );
+	        }
+		
+     	
+     	client.setChemin(image);
+    		
         String nom = getValeurChamp( request, CHAMP_NOM );
         String prenom = getValeurChamp( request, CHAMP_PRENOM );
         String adresse = getValeurChamp( request, CHAMP_ADRESSE );
@@ -103,7 +108,105 @@ public final class CreationClientForm {
         return client;
     }
 
-    
+    private String getValidationIamge(HttpServletRequest request, String chemin) throws FormValidationException {
+    	
+    	 String nomFichier = null;
+        
+    	try {
+		Part part = request.getPart(CHAMP_IMAGE);
+	
+		nomFichier= getNomFichier(part);
+		
+		if (nomFichier!=null && !nomFichier.isEmpty()) {
+			/* Extraction du type MIME du fichier depuis l'InputStream nommé "contenu" */
+	    	MimeUtil.registerMimeDetector( "eu.medsea.mimeutil.detector.MagicMimeMimeDetector" );
+	    	Collection<?> mimeTypes = MimeUtil.getMimeTypes( part.getInputStream() );
+	   
+	    	/*
+	    	 * Si le fichier est bien une image, alors son en-tête MIME
+	    	 * commence par la chaîne "image"
+	    	 */
+	    	
+	    	if ( mimeTypes.toString().startsWith( "image" ) ) {
+	    
+	    	
+	    	    	ecrireFichier( part, nomFichier, chemin );
+	    	   
+	    	} else {
+	    	
+	    		throw new FormValidationException("le fichier doit être une image. ");
+	    	}
+		
+		}
+    	}catch ( IllegalStateException e ) {
+            /*
+             * Exception retournée si la taille des données dépasse les limites
+             * définies dans la section <multipart-config> de la déclaration de
+             * notre servlet d'upload dans le fichier web.xml
+             */
+            e.printStackTrace();
+            throw new FormValidationException( "Le fichier envoyé ne doit pas dépasser 1Mo." );
+        } catch ( IOException e ) {
+            /*
+             * Exception retournée si une erreur au niveau des répertoires de
+             * stockage survient (répertoire inexistant, droits d'accès
+             * insuffisants, etc.)
+             */
+            e.printStackTrace();
+            throw new FormValidationException( "Erreur de configuration du serveur." );
+        } catch ( ServletException e ) {
+            /*
+             * Exception retournée si la requête n'est pas de type
+             * multipart/form-data.
+             */
+            e.printStackTrace();
+            throw new FormValidationException(
+                    "Ce type de requête n'est pas supporté, merci d'utiliser le formulaire prévu pour envoyer votre fichier." );
+        }
+		
+	return nomFichier;
+}
+
+private void ecrireFichier(Part part, String nomFichier, String chemin) {
+	
+	BufferedInputStream entree = null;
+	BufferedOutputStream sortie= null;
+	
+	try {
+		entree = new BufferedInputStream(part.getInputStream(), TAILLE_TAMPON);
+		
+		sortie= new BufferedOutputStream(new FileOutputStream(new File(chemin+nomFichier)));
+		
+		
+		 byte[] tampon = new byte[TAILLE_TAMPON];
+	        int longueur;
+	        while ( ( longueur = entree.read( tampon ) ) > 0 ) {
+	            sortie.write( tampon, 0, longueur );
+	        }
+	        
+	        
+	        
+	} catch (IOException e) {
+		
+		e.printStackTrace();
+	} finally {
+		try {
+			sortie.close();
+		}
+		catch (IOException ignore) {
+		
+		} 
+		try {
+			entree.close();
+		}
+		catch (IOException ignore) {
+		
+		} 
+	}
+	
+}
+
+
     private String getNomFichier(Part part) { 
     	
 		for (String  contentDisposition : part.getHeader("content-disposition").split(";")) {

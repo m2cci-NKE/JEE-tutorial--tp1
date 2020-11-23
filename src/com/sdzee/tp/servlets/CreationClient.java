@@ -25,6 +25,7 @@ public class CreationClient extends HttpServlet {
 
     public static final String VUE_FORM         = "/WEB-INF/creeClient.jsp";
     public static final String SESSION_CLIENTS  = "clients";
+    public static final String CHEMIN        = "chemin";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
@@ -36,8 +37,10 @@ public class CreationClient extends HttpServlet {
     public void doPost( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
+    	String chemin = this.getServletConfig().getInitParameter( CHEMIN );
+    	
         CreationClientForm form = new CreationClientForm();
-        Client client = form.creerClient( request );
+        Client client = form.creerClient( request,chemin );
         
         request.setAttribute( ATT_FORM, form );
         request.setAttribute( ATT_CLIENT, client );

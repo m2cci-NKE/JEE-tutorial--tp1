@@ -47,16 +47,19 @@
 			 			<td><p><c:out value="${entry.value.statutPaiement }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modeLivraison }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modeLivraison }"/></p></td>
-			 			<td><p><a href="<c:url value="commande.client.chemin" />">Check</a></p></td>
+			 			<td>
+			 			<c:if test="${!empty entry.value.client.chemin }">
+			 			<c:set var="photo"><c:out value="${entry.value.client.chemin }"></c:out></c:set>
+			 			<p><a href="<c:url value="/img/${photo }" />">Check</a></p>
+			 			</c:if> 
+			 			</td>
 			 			<td><p><a href="<c:url value="/suppressionCommande?date=${ entry.value.date}" />" ><img src="image/delete.jpg" style="width:25px;height:25px" ></a></p></td>
 					</tr>
-					<c:out value="${entry.value.client.chemin }"></c:out>
+					
 				</c:forEach>
 			</table>			
 			</c:otherwise>
 			</c:choose>	
-			
-			
 	</div>
 	
 </body>

@@ -30,7 +30,8 @@
 						  
 				<c:set var="client" value="${ commande.client }" scope="request" />
 						    <div id="nouveauClient">
-						    	<c:import url="/inc/inc_commande_form.jsp"/>
+						    	<c:import url="/inc/inc_client_form.jsp"/>
+						    	
 						    </div>
 								 
 				

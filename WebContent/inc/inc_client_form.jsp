@@ -31,8 +31,7 @@
 		size="20" maxlength="60" />
 	
 	<br />
-
-	<label for="image">Image</label>
-     <input type="file" name="image"/> 
-              
-
+            
+<label for="imageClient">Image</label>
+<input type="file" id="imageClient" name="imageClient" />
+<span class="erreur">${form.erreurs['imageClient']}</span>
