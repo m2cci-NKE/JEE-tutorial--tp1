@@ -23,6 +23,8 @@ import org.joda.time.format.DateTimeFormatter;
 
 import com.sdzee.tp.beans.Client;
 import com.sdzee.tp.beans.Commande;
+import com.sdzee.tp.dao.ClientDao;
+import com.sdzee.tp.dao.CommandeDao;
 
 import eu.medsea.mimeutil.MimeUtil;
 
@@ -48,12 +50,20 @@ public class CreationCommandeForm {
     private static final String ANCIEN_CLIENT          = "ancienClient";
     
       
-
-
+    private CommandeDao commandeDao;
+    private ClientDao clientDao;
     public Map<String, String> erreurs = new HashMap<>();
     String                     resultat;
 
-    public Map<String, String> getErreurs() {
+    public CreationCommandeForm(CommandeDao commandeDao, ClientDao clientDao) {
+		this.commandeDao=commandeDao;
+		this.clientDao= clientDao;
+	}
+    
+
+	
+
+	public Map<String, String> getErreurs() {
         return erreurs;
     }
 
@@ -66,12 +76,7 @@ public class CreationCommandeForm {
     	
     	Client client =new Client();
     	
-    	
-    	
-        /*
-         * Si l'utilisateur choisit un client déjà existant, pas de validation à
-         * effectuer
-         */
+   
         String choixNouveauClient = getValeurChamp( request, CHAMP_CHOIX_CLIENT );
         
         if ( ANCIEN_CLIENT.equals( choixNouveauClient ) ) {
@@ -83,45 +88,49 @@ public class CreationCommandeForm {
             client = ( (Map<String, Client>) session.getAttribute( SESSION_CLIENTS ) ).get( nomAncienClient );
         } else {
            
-            CreationClientForm clientForm = new CreationClientForm();
+            CreationClientForm clientForm = new CreationClientForm(clientDao);
             client = clientForm.creerClient( request , chemin);
             erreurs = clientForm.getErreurs();
         }
     	
 
-        String date = getDate();
+    
 
       
         /* ****validation Commande***** */
-        double montant = 0;
-
+      
+        Commande commande = new Commande();
+        
         String modePaiement = request.getParameter( CHAMP_MODE_PAIEMENT );
         String statutPaiement = request.getParameter( CHAMP_STATUT_PAIEMENT );
         String modeLivraison = request.getParameter( CHAMP_MODE_LIVRAISON );
         String statutLivraison = request.getParameter( CHAMP_STATUT_LIVRAISON );
 
-		
-		  try { montant = Double.parseDouble( request.getParameter( CHAMP_MONTANT ) );
-		  validationMontant( montant ); } catch ( Exception e ) { setErreurs(
-		  CHAMP_MONTANT, e.getMessage() ); }
-		  
-		  try { validationModePaiement( modePaiement ); } catch ( Exception e ) {
-		  setErreurs( CHAMP_MODE_PAIEMENT, e.getMessage() ); } try {
-		  validationstatutPaiement( statutPaiement ); } catch ( Exception e ) {
-		  setErreurs( CHAMP_STATUT_PAIEMENT, e.getMessage() ); } try {
-		  validationModeLivraison( modeLivraison ); } catch ( Exception e ) {
-		  setErreurs( CHAMP_MODE_LIVRAISON, e.getMessage() ); } try {
-		  validationStatutLivraison( statutLivraison ); } catch ( Exception e ) {
-		  setErreurs( CHAMP_STATUT_LIVRAISON, e.getMessage() ); }
-		 
-
-        if ( !erreurs.isEmpty() ) {
-            resultat = "Echec de la création de la commande.";
-
-        } else {
-
+		traiterMontant( commande,request);
+        traiterModePaiement(modePaiement, commande);
+        traiterstatutPaiement(statutPaiement, commande);
+        traitermodeLivraison(modeLivraison, commande);
+        traiterStatutLivraison(statutLivraison, commande);
+        
+        DateTime dt = new DateTime();
+        DateTimeFormatter formatter = DateTimeFormat.forPattern( FORMAT_DATE );
+        String date = dt.toString( formatter );
+  
+        commande.setDate( date );
+        commande.setClient( client );
+        
+        
+        commande.setModePaiement( modePaiement );
+        commande.setStatutPaiement( statutPaiement );
+        commande.setModeLivraison( modeLivraison );
+        commande.setStatutLivraison( statutLivraison );
+        
+        if ( erreurs.isEmpty() ) {
+        	commandeDao.creer(commande);
             resultat = "Commande créée avec succès !";
-
+        	
+        } else {
+        	   resultat = "Echec de la création de la commande.";
         }
 
         /*
@@ -129,23 +138,60 @@ public class CreationCommandeForm {
          * données récupérées
          */
 
-        Commande commande = new Commande();
-        commande.setClient( client );
-        commande.setDate( date );
-        commande.setMontant( montant );
-        commande.setModePaiement( modePaiement );
-        commande.setStatutPaiement( statutPaiement );
-        commande.setModeLivraison( modeLivraison );
-        commande.setStatutLivraison( statutLivraison );
+       
+       
 
         return commande;
 
     }
 
     
-  
+	private void traiterStatutLivraison(String statutLivraison, Commande commande) {
+		 try {
+			  validationStatutLivraison( statutLivraison ); } catch ( Exception e ) {
+			  setErreurs( CHAMP_STATUT_LIVRAISON, e.getMessage() ); }
+		
+	}
 
-	
+	private void traitermodeLivraison(String modeLivraison, Commande commande) {
+		try {
+			  validationModeLivraison( modeLivraison ); } catch ( Exception e ) {
+			  setErreurs( CHAMP_MODE_LIVRAISON, e.getMessage() ); }
+		
+	}
+
+	private void traiterstatutPaiement(String statutPaiement, Commande commande) {
+		try {
+			  validationstatutPaiement( statutPaiement ); } catch ( Exception e ) {
+			  setErreurs( CHAMP_STATUT_PAIEMENT, e.getMessage() ); }
+		
+	}
+
+	private void traiterModePaiement(String modePaiement, Commande commande) {
+		  try {
+			  validationModePaiement( modePaiement ); 
+			  } catch 
+		  ( Exception e ) 
+		  {
+		  setErreurs( CHAMP_MODE_PAIEMENT, e.getMessage() ); 
+		  }
+		
+	}
+
+	private void traiterMontant(Commande commande, HttpServletRequest request) {
+		double	montant = 0;
+		try { 
+		   montant = Double.parseDouble( request.getParameter( CHAMP_MONTANT ) );
+		    
+			validationMontant( montant ); 
+		  
+		} catch ( Exception e ) 
+		
+		{ setErreurs(
+		  CHAMP_MONTANT, e.getMessage() ); 
+		}
+		commande.setMontant( montant );
+	}
 
 	private static String getValeurChamp( HttpServletRequest request, String nomChamp ) {
         String valeur = request.getParameter( nomChamp );
@@ -203,12 +249,5 @@ public class CreationCommandeForm {
         }
     }
 
-    private String getDate() {
-        /* Récupération de la date courante */
-        DateTime dt = new DateTime();
-        /* Conversion de la date en String selon le format défini */
-        DateTimeFormatter formatter = DateTimeFormat.forPattern( FORMAT_DATE );
-
-        return dt.toString( formatter );
-    }
+  
 }

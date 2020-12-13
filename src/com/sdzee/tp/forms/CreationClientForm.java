@@ -5,8 +5,11 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import com.sdzee.tp.beans.Client;
+import com.sdzee.tp.dao.ClientDao;
+import com.sdzee.tp.dao.DAOException;
 
 import eu.medsea.mimeutil.MimeUtil;
 
@@ -28,11 +33,14 @@ public final class CreationClientForm {
     private static final String CHAMP_IMAGE     = "imageClient";
 
     private static final int    TAILLE_TAMPON   = 10240;                        // 10ko
-    
+    private ClientDao clientDao;
     private String              resultat;
     private Map<String, String> erreurs         = new HashMap<String, String>();
+    
+    
+   
 
-    public Map<String, String> getErreurs() {
+	public Map<String, String> getErreurs() {
         return erreurs;
     }
 
@@ -40,6 +48,15 @@ public final class CreationClientForm {
         return resultat;
     }
 
+    
+ /* Constructeur */ 
+    
+    public CreationClientForm(ClientDao clientDao) {
+    	this.clientDao=clientDao;
+	}
+    
+    /*  Methode */
+    
     public Client creerClient( HttpServletRequest request, String chemin)  {
     	
     
@@ -49,66 +66,99 @@ public final class CreationClientForm {
 		
 			try {
 				image = getValidationIamge(request, chemin);
-			}  catch ( FormValidationException e ) {
-	            setErreur( CHAMP_IMAGE, e.getMessage() );
-	        }
+			} catch (FormValidationException e1) {
+				
+				e1.printStackTrace();
+			}
 		
-     	
-     	client.setChemin(image);
+     	client.setImage(image);
     		
         String nom = getValeurChamp( request, CHAMP_NOM );
         String prenom = getValeurChamp( request, CHAMP_PRENOM );
         String adresse = getValeurChamp( request, CHAMP_ADRESSE );
         String telephone = getValeurChamp( request, CHAMP_TELEPHONE );
         String email = getValeurChamp( request, CHAMP_EMAIL );
-
+        
+        
        
-
         try {
-            validationNom( nom );
-        } catch ( Exception e ) {
-            setErreur( CHAMP_NOM, e.getMessage() );
-        }
-        client.setNom( nom );
-
-        try {
-            validationPrenom( prenom );
-        } catch ( Exception e ) {
-            setErreur( CHAMP_PRENOM, e.getMessage() );
-        }
-        client.setPrenom( prenom );
-
-        try {
-            validationAdresse( adresse );
-        } catch ( Exception e ) {
-            setErreur( CHAMP_ADRESSE, e.getMessage() );
-        }
-        client.setAdresse( adresse );
-
-//        try {
-//            validationTelephone( telephone );
-//        } catch ( Exception e ) {
-//            setErreur( CHAMP_TELEPHONE, e.getMessage() );
-//        }
-        client.setTelephone( telephone );
-
-        try {
-            validationEmail( email );
-        } catch ( Exception e ) {
-            setErreur( CHAMP_EMAIL, e.getMessage() );
-        }
-        client.setEmail( email );
-
-        if ( erreurs.isEmpty() ) {
-            resultat = "Succès de la création du client.";
-        } else {
-            resultat = "Échec de la création du client.";
-        }
+		        traiterNom(nom, client);
+		        traiterPrenom(prenom, client);
+		        traiterAdresse(adresse, client);
+		        traiterTelephone(telephone, client);
+		        traiterEmail(email,client);
+		        
+		        
+		      
+		        if ( erreurs.isEmpty() ) {
+		        	
+						clientDao.creer(client);
+		                resultat = "Succès de la création du client.";
+		        } else {
+		            resultat = "Échec de la création du client.";
+		        }
+        	} catch (DAOException | SQLException e) {
+        		resultat = "Échec de l'inscription : une erreur imprévue est survenue, merci de réessayer dans quelques instants.";
+				e.printStackTrace();
+			} 
 
         return client;
     }
 
-    private String getValidationIamge(HttpServletRequest request, String chemin) throws FormValidationException {
+    private void traiterEmail(String email, Client client) {
+    	   try {
+               validationEmail( email );
+           } catch ( Exception e ) {
+               setErreur( CHAMP_EMAIL, e.getMessage() );
+           }
+           client.setEmail( email );
+		
+	}
+
+	private void traiterTelephone(String telephone, Client client) {
+		
+		//      try {
+		//      validationTelephone( telephone );
+		//  } catch ( Exception e ) {
+		//      setErreur( CHAMP_TELEPHONE, e.getMessage() );
+		//  }
+		  client.setTelephone( telephone );
+
+		
+	}
+
+	private void traiterAdresse(String adresse, Client client) {
+		
+    	 try {
+             validationAdresse( adresse );
+         } catch ( Exception e ) {
+             setErreur( CHAMP_ADRESSE, e.getMessage() );
+         }
+         client.setAdresse( adresse );
+		
+	}
+
+	private void traiterPrenom(String prenom, Client client) {
+    	 try {
+             validationPrenom( prenom );
+         } catch ( Exception e ) {
+             setErreur( CHAMP_PRENOM, e.getMessage() );
+         }
+         client.setPrenom( prenom );
+		
+	}
+
+	private void traiterNom(String nom, Client client) {
+    	   try {
+               validationNom( nom );
+           } catch ( Exception e ) {
+               setErreur( CHAMP_NOM, e.getMessage() );
+           }
+           client.setNom( nom );
+		
+	}
+
+	private String getValidationIamge(HttpServletRequest request, String chemin) throws FormValidationException {
     	
     	 String nomFichier = null;
         

@@ -13,14 +13,17 @@ import javax.servlet.http.HttpSession;
 
 import com.sdzee.tp.beans.Client;
 import com.sdzee.tp.beans.Commande;
+import com.sdzee.tp.dao.ClientDao;
+import com.sdzee.tp.dao.CommandeDao;
+import com.sdzee.tp.dao.DAOFactory;
 import com.sdzee.tp.forms.CreationCommandeForm;
-
+import com.sdzee.tp.dao.DAOFactory;
 @WebServlet( "/CreationCommande" )
 public class CreationCommande extends HttpServlet {
 
     public static final String ATT_COMMANDE     = "commande";
     public static final String ATT_FORM         = "form";
-
+    public static final String CONF_DAO_FACTORY = "daofactory";
     public static final String VUE_SUCCES       = "/listeCommandes";
     public static final String VUE_FORM         = "/WEB-INF/creeCommande.jsp";
     public static final String SESSION_COMMANDE = "commande";
@@ -28,6 +31,16 @@ public class CreationCommande extends HttpServlet {
     public static final String SESSION_CLIENTS  = "clients";
     public static final String CHEMIN        = "chemin";
 
+    private ClientDao clientDao;
+    private CommandeDao commandeDao;
+    @Override
+    public void init() throws ServletException {
+    	this.commandeDao= ((DAOFactory)getServletContext().getAttribute(CONF_DAO_FACTORY)).getCommandeDAU();
+    	this.clientDao= ((DAOFactory) getServletContext().getAttribute(CONF_DAO_FACTORY)).getClientDAO();
+    }
+    
+   
+   
     
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -38,7 +51,7 @@ public class CreationCommande extends HttpServlet {
             throws ServletException, IOException {
     	
     	String chemin = this.getServletConfig().getInitParameter( CHEMIN );
-        CreationCommandeForm form = new CreationCommandeForm();
+        CreationCommandeForm form = new CreationCommandeForm(commandeDao, clientDao);
         Commande commande = null;
 		try {
 			commande = form.creerCommande( request,chemin );
@@ -56,12 +69,12 @@ public class CreationCommande extends HttpServlet {
 
             HttpSession session = request.getSession();
 
-            Map<String, Client> clients = (HashMap<String, Client>) session.getAttribute( SESSION_CLIENTS );
+            Map<Long, Client> clients = (HashMap<Long, Client>) session.getAttribute( SESSION_CLIENTS );
             if ( clients == null ) {
-            	clients = new HashMap<String, Client>();
+            	clients = new HashMap<Long, Client>();
             } 
 
-            clients.put(commande.getClient().getNom(), commande.getClient());
+            clients.put(commande.getClient().getId(), commande.getClient());
             
             session.setAttribute( SESSION_CLIENTS, clients );
             
@@ -69,12 +82,12 @@ public class CreationCommande extends HttpServlet {
  
             /* **Add session Commande** */
             
-            Map<String, Commande> commandes = (HashMap<String, Commande>) session.getAttribute( SESSION_COMMANDE );
+            Map<Long, Commande> commandes = (HashMap<Long, Commande>) session.getAttribute( SESSION_COMMANDE );
             if ( commandes == null ) {
-            	commandes = new HashMap<String, Commande>();
+            	commandes = new HashMap<Long, Commande>();
             }
-
-            commandes.put(commande.getDate(), commande);
+            
+            commandes.put(commande.getId(), commande);
             
             session.setAttribute( SESSION_COMMANDE, commandes );
          

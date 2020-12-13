@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -41,20 +42,22 @@
 					<c:forEach items="${sessionScope.commande}" var="entry" varStatus="boucle">
 					<tr>
 						<td><c:out value="${entry.value.client.nom } "/><c:out value="${entry.value.client.prenom }"/></td>
-			 			<td><p><c:out value="${entry.value.date }"/></p></td>
+			 			<td><p><joda:format value="${ commande.date }" pattern="dd/MM/yyyy HH:mm:ss"></joda:format></p></td>
 			 			<td><p><c:out value="${entry.value.montant }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modePaiement }"/></p></td>
 			 			<td><p><c:out value="${entry.value.statutPaiement }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modeLivraison }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modeLivraison }"/></p></td>
 			 			<td>
-			 			<c:if test="${!empty entry.value.client.chemin }">
-			 			<c:set var="photo"><c:out value="${entry.value.client.chemin }"></c:out></c:set>
+			 			<c:if test="${!empty entry.value.client.image }">
+			 			<c:set var="photo"><c:out value="${entry.value.client.image }"></c:out></c:set>
 			 			<p><a href="<c:url value="/img/${photo }" />">Check</a></p>
 			 			</c:if> 
 			 			</td>
-			 			<td><p><a href="<c:url value="/suppressionCommande?date=${ entry.value.date}" />" ><img src="image/delete.jpg" style="width:25px;height:25px" ></a></p></td>
+			 			<td><a href="<c:url value="/suppressionCommande"><c:param name="idCommande" value="${entry.key }"/></c:url>" >
+			 			<img src="image/delete.jpg" style="width:25px;height:25px" ></a></td>
 					</tr>
+					
 					
 				</c:forEach>
 			</table>			

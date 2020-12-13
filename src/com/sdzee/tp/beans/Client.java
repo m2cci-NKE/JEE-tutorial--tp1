@@ -2,12 +2,14 @@ package com.sdzee.tp.beans;
 
 public class Client {
     /* Propriétés du bean */
+	
+	private Long id;
     private String nom;
     private String prenom;
     private String adresse;
     private String telephone;
     private String email;
-    private String chemin;
+    private String image;
 
     public Client() {
 
@@ -53,12 +55,20 @@ public class Client {
         return email;
     }
 
-	public String getChemin() {
-		return chemin;
+	public String getImage() {
+		return image;
 	}
 
-	public void setChemin(String chemin) {
-		this.chemin = chemin;
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
  

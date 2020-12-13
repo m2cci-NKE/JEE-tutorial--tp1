@@ -1,7 +1,10 @@
 package com.sdzee.tp.beans;
 
+import org.joda.time.DateTime;
+
 public class Commande {
     /* Propriétés du bean */
+	private Long id;
     private Client client;
     private String date;
     private Double montant;
@@ -22,8 +25,8 @@ public class Commande {
         return date;
     }
 
-    public void setDate( String date ) {
-        this.date = date;
+    public void setDate( String date2 ) {
+        this.date = date2;
     }
 
     public Double getMontant() {
@@ -65,4 +68,12 @@ public class Commande {
     public void setStatutLivraison( String statutLivraison ) {
         this.statutLivraison = statutLivraison;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 }

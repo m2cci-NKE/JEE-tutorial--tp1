@@ -7,7 +7,7 @@
 <a href="<c:url value="/creationCommande" />">Créer une nouvelle Commande</a>
 <br>
 <br>
-<a href="<c:url value="listeClients" />">Voir les Clients existants</a>
+<a href="<c:url value="/listeClients" />">Voir les Clients existants</a>
 <br>
 <br>
 <a href="<c:url value="/listeCommandes" />">Voir les commandes existants </a>
