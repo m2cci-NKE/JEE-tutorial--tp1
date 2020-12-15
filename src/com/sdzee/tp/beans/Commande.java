@@ -6,7 +6,7 @@ public class Commande {
     /* Propriétés du bean */
 	private Long id;
     private Client client;
-    private String date;
+    private DateTime date;
     private Double montant;
     private String modePaiement;
     private String statutPaiement;
@@ -21,12 +21,12 @@ public class Commande {
         this.client = client;
     }
 
-    public String getDate() {
+    public DateTime getDate() {
         return date;
     }
 
-    public void setDate( String date2 ) {
-        this.date = date2;
+    public void setDate( DateTime date ) {
+        this.date = date;
     }
 
     public Double getMontant() {

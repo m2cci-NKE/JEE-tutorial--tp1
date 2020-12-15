@@ -14,6 +14,18 @@
 </listener>
 
 
+
+<filter>
+	<filter-name>RestrictionFilter</filter-name>
+	<filter-class>com.sdzee.tp.filters.RestrictionFilter</filter-class>
+</filter>
+<filter-mapping>
+	<filter-name>RestrictionFilter</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
+
+
+
 <jsp-config>
 		<jsp-property-group>
 			<url-pattern>*.jsp</url-pattern>

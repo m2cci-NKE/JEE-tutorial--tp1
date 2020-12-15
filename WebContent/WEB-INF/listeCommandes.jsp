@@ -42,7 +42,7 @@
 					<c:forEach items="${sessionScope.commande}" var="entry" varStatus="boucle">
 					<tr>
 						<td><c:out value="${entry.value.client.nom } "/><c:out value="${entry.value.client.prenom }"/></td>
-			 			<td><p><joda:format value="${ commande.date }" pattern="dd/MM/yyyy HH:mm:ss"></joda:format></p></td>
+			 			<td><joda:format value="${ entry.value.date }" pattern="dd/MM/yyyy HH:mm:ss"></joda:format></td>
 			 			<td><p><c:out value="${entry.value.montant }"/></p></td>
 			 			<td><p><c:out value="${entry.value.modePaiement }"/></p></td>
 			 			<td><p><c:out value="${entry.value.statutPaiement }"/></p></td>

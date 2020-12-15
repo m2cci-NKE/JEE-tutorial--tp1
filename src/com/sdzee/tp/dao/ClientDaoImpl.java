@@ -56,7 +56,7 @@ public class ClientDaoImpl implements ClientDao{
 		  ResultSet resultSet = null;
 		try {
 			connexion=  daoFactory.getConnxion();
-			preparedStatement = initialisationRequetePreparee(connexion, SQL_SELECT, false, id);
+			preparedStatement = initialisationRequetePreparee(connexion, SQL_SELECT_PAR_ID, false, id);
 			resultSet= preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				client= map(resultSet);

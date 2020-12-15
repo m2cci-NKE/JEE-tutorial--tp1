@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import static com.sdzee.tp.dao.DAOUtilitaire.*;
@@ -26,27 +27,34 @@ public class CommandeDaoImpl implements CommandeDao{
 	private static final String SQL_DELETE_PAR_ID = "DELETE FROM Commande WHERE id = ?";
 	
 	private Commande commande;
-	DAOFactory daoFactory;
+	private static DAOFactory daoFactory;
 	
-public CommandeDaoImpl(DAOFactory daoFactory) {
+ CommandeDaoImpl(DAOFactory daoFactory) {
 		this.daoFactory= daoFactory;
 	}
 
 private static Commande map(ResultSet resultSet) throws SQLException {
 		
 		Commande commande = new Commande();
-		Client client;
+		
+		
 		commande.setId(resultSet.getLong("id"));
-		commande.getClient().setId(resultSet.getLong("id_client")); 
-		commande.setDate( resultSet.getString("date"));
+		
+		ClientDao clientDao = daoFactory.getClientDAO();
+		
+		commande.setClient(clientDao.trouver(resultSet.getLong("id_client")));
+		
+		commande.setDate(new DateTime(resultSet.getTimestamp("date")) );
 		commande.setMontant(resultSet.getDouble("montant")); 
-		commande.setModePaiement(resultSet.getString("modePaiement"));
-		commande.setStatutPaiement(resultSet.getString("statutPaiement"));
-		commande.setModeLivraison(resultSet.getString("modeLivraison"));
-		commande.setStatutLivraison(resultSet.getString("statutLivraison"));
+		commande.setModePaiement(resultSet.getString("mode_paiement"));
+		commande.setStatutPaiement(resultSet.getString("statut_paiement"));
+		commande.setModeLivraison(resultSet.getString("mode_livraison"));
+		commande.setStatutLivraison(resultSet.getString("statut_livraison"));
 		
 		return commande;
 	}
+
+
 	
 	@Override
 	public void creer(Commande commande) {
@@ -56,10 +64,17 @@ private static Commande map(ResultSet resultSet) throws SQLException {
 		  try {
 			  
 			connexion= daoFactory.getConnxion();
-			System.out.println("I'm insert commande in DB");
-			preparedStatement= initialisationRequetePreparee(connexion, SQL_INSERT, true, commande.getClient(), commande.getDate(),
-					  commande.getMontant(), commande.getModePaiement(), commande.getStatutPaiement(),
-					  commande.getModeLivraison(), commande.getStatutLivraison());
+		
+			preparedStatement= initialisationRequetePreparee(connexion, SQL_INSERT, true, 
+							commande.getClient().getId(), 
+							new Timestamp( commande.getDate().getMillis() ),
+							commande.getMontant(), 
+							commande.getModePaiement(), 
+							commande.getStatutPaiement(),
+							commande.getModeLivraison(), 
+							commande.getStatutLivraison()
+							);
+			
 			int status= preparedStatement.executeUpdate();
 			if (status ==0) {
 				throw new DAOException( "Échec de la création du Clinet, aucune ligne ajoutée dans la table." );
@@ -111,7 +126,7 @@ private static Commande map(ResultSet resultSet) throws SQLException {
 		  try {
 			  connexion= daoFactory.getConnxion();
 			preparedStatement=connexion.prepareStatement(SQL_SELECT);
-			preparedStatement.executeQuery();
+			resultSet=preparedStatement.executeQuery();
 			
 			while  (resultSet.next()) {
 				commande.add(map(resultSet));

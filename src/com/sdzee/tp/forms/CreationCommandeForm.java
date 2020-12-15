@@ -112,9 +112,8 @@ public class CreationCommandeForm {
         traitermodeLivraison(modeLivraison, commande);
         traiterStatutLivraison(statutLivraison, commande);
         
-        DateTime dt = new DateTime();
-        DateTimeFormatter formatter = DateTimeFormat.forPattern( FORMAT_DATE );
-        String date = dt.toString( formatter );
+        DateTime date = new DateTime();
+        
   
         commande.setDate( date );
         commande.setClient( client );
